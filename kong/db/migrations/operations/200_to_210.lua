@@ -205,6 +205,7 @@ local postgres = {
     ------------------------------------------------------------------------------
     -- Update composite cache keys to workspace-aware formats
     ws_update_composite_cache_key = function(_, connector, table_name, is_partitioned)
+      assert(connector:connect_migrations())
       local _, err = connector:query(render([[
         UPDATE "$(TABLE)"
         SET cache_key = CONCAT(cache_key, ':',
@@ -224,6 +225,7 @@ local postgres = {
     ------------------------------------------------------------------------------
     -- Update keys to workspace-aware formats
     ws_update_keys = function(_, connector, table_name, unique_keys)
+      assert(connector:connect_migrations())
       -- Reset default value for ws_id once it is populated
       local _, err = connector:query(render([[
         ALTER TABLE IF EXISTS ONLY "$(TABLE)" ALTER "ws_id" SET DEFAULT NULL;
@@ -243,6 +245,7 @@ local postgres = {
     fixup_plugin_config = function(_, connector, plugin_name, fixup_fn)
       local pgmoon_json = require("pgmoon.json")
 
+      assert(connector:connect_migrations())
       for plugin, err in connector:iterate("SELECT id, name, config FROM plugins") do
         if err then
           return nil, err

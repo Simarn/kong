@@ -5,6 +5,7 @@ return {
     ]],
 
     teardown = function(connector)
+      assert(connector:connect_migrations())
       local _, err = connector:query([[
         DO $$
         BEGIN
